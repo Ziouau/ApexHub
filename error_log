@@ -1,0 +1,20 @@
+[15-Apr-2026 10:47:40 UTC] PHP Warning:  require_once(db_config.php): Failed to open stream: No such file or directory in /home/cxwrkjhb/public_html/ApexHub/register.php on line 2
+[15-Apr-2026 10:47:40 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'db_config.php' (include_path='.:/opt/cpanel/ea-php84/root/usr/share/pear') in /home/cxwrkjhb/public_html/ApexHub/register.php:2
+Stack trace:
+#0 {main}
+  thrown in /home/cxwrkjhb/public_html/ApexHub/register.php on line 2
+[15-Apr-2026 10:55:10 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'ruolo' in 'SELECT' in /home/cxwrkjhb/public_html/ApexHub/login.php:9
+Stack trace:
+#0 /home/cxwrkjhb/public_html/ApexHub/login.php(9): mysqli->prepare('SELECT id, user...')
+#1 {main}
+  thrown in /home/cxwrkjhb/public_html/ApexHub/login.php on line 9
+[15-Apr-2026 10:58:31 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'ruolo' in 'INSERT INTO' in /home/cxwrkjhb/public_html/ApexHub/register.php:28
+Stack trace:
+#0 /home/cxwrkjhb/public_html/ApexHub/register.php(28): mysqli->prepare('INSERT INTO ute...')
+#1 {main}
+  thrown in /home/cxwrkjhb/public_html/ApexHub/register.php on line 28
+[15-Apr-2026 11:01:13 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'ruolo' in 'INSERT INTO' in /home/cxwrkjhb/public_html/ApexHub/index.php:28
+Stack trace:
+#0 /home/cxwrkjhb/public_html/ApexHub/index.php(28): mysqli->prepare('INSERT INTO ute...')
+#1 {main}
+  thrown in /home/cxwrkjhb/public_html/ApexHub/index.php on line 28
