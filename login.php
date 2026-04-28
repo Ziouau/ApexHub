@@ -9,24 +9,34 @@ if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $pass_inserita = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT id, username, password, tentativi_falliti, account_bloccato, attivo FROM utenti WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, username, password, tentativi_falliti, account_bloccato, attivo, ruolo FROM utenti WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $risultato = $stmt->get_result();
 
     if ($utente = $risultato->fetch_assoc()) {
         if ($utente['account_bloccato'] == 1) {
-            $msg = "Account bloccato per troppi tentativi falliti.";
+            $msg = "Account bloccato per troppi tentativi falliti. Contatta l'amministratore.";
             $msg_type = "error";
         } elseif ($utente['attivo'] == 0) {
             $msg = "Account non attivato. Controlla la tua email per il codice OTP.";
             $msg_type = "error";
         } elseif (password_verify($pass_inserita, $utente['password'])) {
-            $conn->query("UPDATE utenti SET tentativi_falliti = 0 WHERE id = " . $utente['id']);
+            // Reset tentativi falliti
+            $conn->query("UPDATE utenti SET tentativi_falliti = 0 WHERE id = " . (int)$utente['id']);
+
+            // Salva sessione
             $_SESSION['utente_id'] = $utente['id'];
-            $_SESSION['username'] = $utente['username'];
-            $_SESSION['email'] = $email;
-            header("Location: dashboard.php");
+            $_SESSION['username']  = $utente['username'];
+            $_SESSION['email']     = $email;
+            $_SESSION['ruolo']     = $utente['ruolo']; // può essere NULL
+
+            // Redirect: se ruolo non ancora scelto → onboarding
+            if ($utente['ruolo'] === null) {
+                header("Location: onboarding.php");
+            } else {
+                header("Location: dashboard.php");
+            }
             exit();
         } else {
             $nuovi_tentativi = $utente['tentativi_falliti'] + 1;
@@ -34,7 +44,12 @@ if (isset($_POST['login'])) {
             $upd = $conn->prepare("UPDATE utenti SET tentativi_falliti = ?, account_bloccato = ? WHERE id = ?");
             $upd->bind_param("iii", $nuovi_tentativi, $blocco, $utente['id']);
             $upd->execute();
-            $msg = "Password errata. Tentativi: $nuovi_tentativi/3";
+
+            if ($blocco) {
+                $msg = "Account bloccato dopo 3 tentativi falliti. Contatta l'amministratore.";
+            } else {
+                $msg = "Password errata. Tentativi: $nuovi_tentativi/3";
+            }
             $msg_type = "error";
         }
     } else {
@@ -66,7 +81,7 @@ if (isset($_POST['login'])) {
                 <form method="POST">
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" name="email" class="form-control" required>
+                        <input type="email" name="email" class="form-control" required autofocus>
                     </div>
                     <div class="form-group">
                         <label>Password</label>
@@ -77,8 +92,8 @@ if (isset($_POST['login'])) {
             </div>
             <div class="auth-footer">
                 <div class="links">
-                    <a href="registrazione.php"> Registrati</a>
-                    <a href="verifica_codice.php" >Verifica Codice</a>
+                    <a href="registrazione.php">Registrati</a>
+                    <a href="verifica_codice.php">Verifica Codice</a>
                 </div>
             </div>
         </div>
